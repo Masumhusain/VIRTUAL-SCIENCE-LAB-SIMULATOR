@@ -1,0 +1,132 @@
+experiments-acid<% layout("layouts/boilerplate") %>
+
+<style>
+  .exp-wrapper {
+    margin: 0;
+    padding: 40px 20px;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #0a0f1f, #1b1f3b, #0a0f1f);
+    color: #e2e8f0;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  .exp-header {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 50px;
+    background: linear-gradient(90deg,#06b6d4,#3b82f6,#8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: exp-glow 2s infinite alternate;
+  }
+
+  @keyframes exp-glow {
+    from { text-shadow: 0 0 10px #3b82f6; }
+    to   { text-shadow: 0 0 20px #06b6d4; }
+  }
+
+  .exp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    gap: 25px;
+  }
+
+  .exp-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 25px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 25px rgba(59,130,246,0.2);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exp-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(139,92,246,0.5);
+  }
+
+  .exp-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, #06b6d4, #3b82f6, #8b5cf6, #06b6d4);
+    animation: exp-rotate 8s linear infinite;
+    z-index: 0;
+    opacity: 0.25;
+  }
+
+  @keyframes exp-rotate {
+    100% { transform: rotate(360deg); }
+  }
+
+  .exp-card__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .exp-card__title {
+    margin: 0 0 15px;
+    font-size: 1.4rem;
+    color: #3b82f6;
+  }
+
+  .exp-card__text {
+    margin: 8px 0;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .exp-highlight {
+    color: #06b6d4;
+    font-weight: bold;
+  }
+
+  .exp-back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #06b6d4;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+
+  .exp-back-link:hover {
+    color: #8b5cf6;
+  }
+</style>
+
+<body>
+  <div class="exp-wrapper">
+    <a href="/" class="exp-back-link">⬅ Back</a>
+    <h1 class="exp-header" data-aos="fade-down">🧪 Acid–Base Experiments</h1>
+
+    <div class="exp-grid">
+      <% experiments.forEach(exp => { %>
+        <div class="exp-card" data-aos="zoom-in">
+          <div class="exp-card__content">
+            <p class="exp-card__text">👤done_by  <%=exp.done_by%></p>
+            <h2 class="exp-card__title"><%= exp.experiment %></h2>
+            <p class="exp-card__text">🔹 Acid Molarity: <span class="exp-highlight"><%= exp.acidMolarity %> M</span></p>
+            <p class="exp-card__text">🔹 Base Molarity: <span class="exp-highlight"><%= exp.baseMolarity %> M</span></p>
+            <p class="exp-card__text">🥤 Acid Volume: <span class="exp-highlight"><%= exp.acidVolume %> mL</span></p>
+            <p class="exp-card__text">🥤 Base Volume: <span class="exp-highlight"><%= exp.baseVolume %> mL</span></p>
+            <p class="exp-card__text">📊 Final pH: <span class="exp-highlight"><%= exp.pH %></span></p>
+            <p>Status: <%=exp.status%></p>
+            <p class="exp-card__text">🕒 Date: <%= exp.createdAt ? exp.createdAt.toLocaleString() : "N/A" %></p>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000, once: false });
+  </script>
+</body>

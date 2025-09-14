@@ -1,0 +1,421 @@
+
+<% layout("layouts/boilerplate") %>
+
+  <style>
+    :root{
+      --bg:#0f1220; --panel:#171a2a; --ink:#e5e7eb; --muted:#9aa0b4;
+      --accent:#6ee7ff; --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:radial-gradient(1200px 600px at 70% -10%,#1c2140 0%,var(--bg) 60%); min-height:100vh; display:grid; grid-template-rows:auto 1fr; gap:12px}
+    header{padding:18px 20px; display:flex; align-items:center; justify-content:space-between}
+    header h1{font-size:20px; margin:0}
+    header .badge{font-size:12px; color:var(--muted)}
+
+    .app{display:grid; grid-template-columns:340px 1fr; gap:16px; padding:0 16px 24px}
+
+    /* Panel */
+    .panel{background:linear-gradient(180deg, #1a1d32 0%, #121528 100%); border:1px solid #232744; border-radius:16px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.35)}
+    .panel h2{font-size:15px; margin:0 0 12px; color:#c9d2ff}
+    .tabs{display:flex; gap:8px; margin-bottom:10px}
+    .tab{padding:8px 10px; background:#232744; border:1px solid #2a2f52; color:#cfe6ff; border-radius:10px; cursor:pointer}
+    .tab.active{background:linear-gradient(135deg,#3b82f6,#06b6d4)}
+    .field{margin:10px 0 16px}
+    .field label{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px}
+    .field input[type=range]{width:100%}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .btn{appearance:none; border:none; background:#232744; color:#e8ecff; padding:10px 12px; border-radius:12px; cursor:pointer; transition:transform .05s ease, background .2s}
+    .btn:hover{background:#2a2f52}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:linear-gradient(135deg,#3b82f6,#06b6d4)}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .note{font-size:11px; color:var(--muted); line-height:1.4}
+    .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#232744; color:#cfe6ff; font-size:12px}
+
+    /* Scene */
+    .scene{position:relative; background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.0)); border:1px solid #232744; border-radius:16px; overflow:hidden; min-height:560px}
+    .toolbar{position:absolute; right:16px; top:16px; display:flex; gap:8px; z-index:10}
+    .readout{position:absolute; left:16px; top:16px; display:flex; gap:8px; flex-wrap:wrap; z-index:10}
+    .chip{font-size:12px; padding:6px 10px; border-radius:999px; background:#232744; color:#cfe6ff}
+
+    .stage{position:absolute; inset:0; display:grid; place-items:center}
+    .world{position:relative; width:960px; height:460px}
+
+    /* Circuit visuals */
+    .board{position:absolute; left:50%; transform:translateX(-50%); top:40px; width:92%; height:360px; border:1px dashed #2a2f52; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.35) inset}
+    .battery{position:absolute; left:80px; top:160px; width:70px; height:40px; display:grid; place-items:center; background:linear-gradient(180deg,#94a3b8,#475569); border:1px solid #7a8699; border-radius:8px}
+    .battery:after{content:"+"; color:#22d3ee; font-weight:700}
+    .resistor{position:absolute; right:180px; top:160px; width:120px; height:28px; border-radius:6px; background:linear-gradient(180deg,#fbbf24,#b45309); border:1px solid #f59e0b}
+    .wire{position:absolute; height:4px; background:#60a5fa; border-radius:999px; box-shadow:0 0 8px rgba(96,165,250,.6)}
+    .wire.h{height:4px}
+    .wire.v{width:4px}
+    .arrow{position:absolute; width:14px; height:14px; border-radius:50%; background:#22c55e; box-shadow:0 0 10px rgba(34,197,94,.6); animation:move 2s linear infinite}
+    @keyframes move{from{transform:translateX(0)} to{transform:translateX(400px)}}
+
+    /* LED to show power */
+    .led{position:absolute; right:80px; top:154px; width:40px; height:40px; border-radius:50%; background:#0a0f1f; box-shadow:inset 0 0 14px rgba(0,0,0,.8)}
+    .led.on{background:radial-gradient(circle at 50% 40%, rgba(255,255,255,.8), rgba(255,255,255,.15) 30%, rgba(34,197,94,.8) 60%, rgba(34,197,94,.2) 70%); box-shadow:0 0 18px rgba(34,197,94,.8), inset 0 0 14px rgba(0,0,0,.8)}
+    .led.warn{box-shadow:0 0 18px rgba(245,158,11,.8), inset 0 0 14px rgba(0,0,0,.8)}
+    .led.bad{box-shadow:0 0 22px rgba(239,68,68,.95), inset 0 0 14px rgba(0,0,0,.8)}
+
+    /* HUD */
+    .hud{position:absolute; bottom:12px; left:16px; right:16px; background:#0f1328aa; border:1px solid #232744; border-radius:12px; padding:10px; display:grid; grid-template-columns:repeat(6,1fr); gap:8px}
+    .cell{font-size:12px; color:#cfe6ff; background:#1b2142; border:1px solid #232744; border-radius:8px; padding:8px}
+
+    /* Plot */
+    .plot{position:absolute; left:50%; transform:translateX(-50%); bottom:86px; width:92%; height:120px; border:1px solid #232744; border-radius:10px; background:#0b1026; overflow:hidden}
+    .plot .grid{position:absolute; inset:0; background:linear-gradient(#141a38 1px,transparent 1px) 0 0/100% 24px, linear-gradient(90deg,#141a38 1px,transparent 1px) 0 0/24px 100%}
+    .dot{position:absolute; width:6px; height:6px; border-radius:50%; background:#38bdf8; box-shadow:0 0 8px rgba(56,189,248,.7)}
+
+    
+  </style>
+
+<body>
+  <div style="display: flex;  align-items: center;justify-content: center;" id="alert-container"></div>
+  <header>
+   <button class="btn btn-success" onclick="extractResult()">Save Result</button>
+   <a  class="btn btn-primary" href="/experiments">go in experiments</a>
+    <h1>Ohm’s Law Lab </h1>
+    <div class="pill">⚡ V = I · R • P = V · I</div>
+  </header>
+
+  <div class="app">
+    <!-- Controls -->
+    <section class="panel" id="controls">
+      <h2>Setup</h2>
+
+      <div class="tabs">
+        <button class="tab active" id="tabOL">Ohm’s Law</button>
+        <button class="tab" id="tabEQ">Series/Parallel</button>
+      </div>
+
+      <!-- Ohm's Law Controls -->
+      <div id="controlsOL">
+        <div class="field">
+          <label>Supply voltage V: <span><span id="VVal">5.0</span> V</span></label>
+          <input id="V" type="range" min="0" max="24" step="0.1" value="5" />
+        </div>
+        <div class="field">
+          <label>Load resistance R: <span><span id="RVal">100.0</span> Ω</span></label>
+          <input id="R" type="range" min="1" max="1000" step="1" value="100" />
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Source resistance r (internal): <span><span id="rVal">0.0</span> Ω</span></label>
+            <input id="r" type="range" min="0" max="50" step="0.1" value="0" />
+          </div>
+          <div class="field">
+            <label>Temperature T: <span><span id="TVal">25</span> °C</span></label>
+            <input id="T" type="range" min="-20" max="120" step="1" value="25" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Temp. coefficient α (metal ~0.0039/°C): <span><span id="alphaVal">0.0039</span> /°C</span></label>
+          <input id="alpha" type="range" min="0" max="0.007" step="0.0001" value="0.0039" />
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Resistor power rating: <span><span id="PrateVal">0.25</span> W</span></label>
+            <input id="Prate" type="range" min="0.0625" max="2" step="0.0625" value="0.25" />
+          </div>
+          <div class="field">
+            <label>Max plot points: <span><span id="maxPtsVal">50</span></span></label>
+            <input id="maxPts" type="range" min="10" max="200" step="10" value="50" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Equivalent Controls -->
+      <div id="controlsEQ" style="display:none">
+        <div class="row">
+          <div class="field">
+            <label>R₁: <span><span id="R1Val">220</span> Ω</span></label>
+            <input id="R1" type="range" min="1" max="2000" step="1" value="220" />
+          </div>
+          <div class="field">
+            <label>R₂: <span><span id="R2Val">330</span> Ω</span></label>
+            <input id="R2" type="range" min="1" max="2000" step="1" value="330" />
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="modeSeries">Series</button>
+          <button class="btn" id="modeParallel">Parallel</button>
+        </div>
+        <p class="note">Series: R<sub>eq</sub>=R₁+R₂. Parallel: R<sub>eq</sub>=(R₁·R₂)/(R₁+R₂). You can send R<sub>eq</sub> to the main tab.</p>
+        <div class="row">
+          <button class="btn" id="sendReq">↪ Use R<sub>eq</sub> in Ohm’s Law</button>
+          <button class="btn" id="resetEq">Reset</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="reset">Reset</button>
+        <button class="btn primary" id="toggle">▶ Power On</button>
+      </div>
+
+      <p class="note">Ohm’s Law: V = I·R. With internal resistance r: I = V / (R + r). Power on load: P = I²R. Temperature effect: R(T)=R₀·(1+α·(T−25°C)).</p>
+    </section>
+
+    <!-- Scene -->
+    <section class="scene" aria-label="ohms law scene">
+      <div class="toolbar">
+        <button class="btn" id="mark">Plot (V,I)</button>
+        <button class="btn" id="clearTrail">Clear plot</button>
+      </div>
+      <div class="readout">
+        <div class="chip" id="status">Status: Ready</div>
+        <div class="chip" id="mode">Mode: Ohm’s Law</div>
+      </div>
+
+      <div class="stage">
+        <div class="world" id="world">
+          <div class="board"></div>
+          <div class="battery" title="Supply"></div>
+          <div class="resistor" id="resistor" title="Load resistor"></div>
+          <div class="led" id="led" title="Indicator"></div>
+
+          <!-- Wires -->
+          <div class="wire h" style="left:150px; top:174px; width:350px"></div>
+          <div class="wire h" style="left:270px; top:300px; width:460px"></div>
+          <div class="wire v" style="left:150px; top:178px; height:126px; width:4px"></div>
+          <div class="wire v" style="left:730px; top:178px; height:126px; width:4px"></div>
+
+          <!-- Moving charge dot -->
+          <div class="arrow" id="charge" style="left:160px; top:167px"></div>
+
+          <!-- Plot area -->
+          <div class="plot" id="plot">
+            <div class="grid"></div>
+          </div>
+        </div>
+        <div class="hud">
+          <div class="cell">V = <span id="Vout">0.00</span> V</div>
+          <div class="cell">I = <span id="Iout">0.000</span> A</div>
+          <div class="cell">R(T) = <span id="Rout">0.00</span> Ω</div>
+          <div class="cell">r = <span id="rOut">0.00</span> Ω</div>
+          <div class="cell">P<sub>load</sub> = <span id="Pout">0.000</span> W</div>
+          <div class="cell">R<sub>eq</sub> (tool) = <span id="ReqOut">—</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ===== Helpers =====
+    const $ = (s, el=document)=>el.querySelector(s);
+    const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+
+    // Elements
+    const tabOL=$('#tabOL'), tabEQ=$('#tabEQ');
+    const controlsOL=$('#controlsOL'), controlsEQ=$('#controlsEQ');
+
+    const VEl=$('#V'), REl=$('#R'), rEl=$('#r'), TEl=$('#T'), alphaEl=$('#alpha'), PrateEl=$('#Prate'), maxPtsEl=$('#maxPts');
+    const VVal=$('#VVal'), RVal=$('#RVal'), rVal=$('#rVal'), TVal=$('#TVal'), alphaVal=$('#alphaVal'), PrateVal=$('#PrateVal'), maxPtsVal=$('#maxPtsVal');
+
+    const R1El=$('#R1'), R2El=$('#R2');
+    const R1Val=$('#R1Val'), R2Val=$('#R2Val');
+
+    const toggle=$('#toggle'), reset=$('#reset');
+    const world=$('#world'), led=$('#led'), resistor=$('#resistor');
+    const status=$('#status'), mode=$('#mode');
+
+    const Vout=$('#Vout'), Iout=$('#Iout'), Rout=$('#Rout'), rOut=$('#rOut'), Pout=$('#Pout'), ReqOut=$('#ReqOut');
+
+    const markBtn=$('#mark'), clearTrailBtn=$('#clearTrail');
+    const plot=$('#plot');
+
+    const modeSeriesBtn=$('#modeSeries'), modeParallelBtn=$('#modeParallel'), sendReqBtn=$('#sendReq'), resetEqBtn=$('#resetEq');
+
+    // State
+    const state={
+      active:'ol', power:false,
+      V:5, R0:100, r:0, T:25, alpha:0.0039, Prate:0.25, maxPts:50,
+      // eq tool
+      R1:220, R2:330, eqMode:'series', Req:null,
+      // animation
+      lastT:null
+    };
+
+    function setActive(kind){
+      state.active=kind; state.power=false; toggle.textContent='▶ Power On';
+      mode.textContent='Mode: '+(kind==='ol'?'Ohm\u2019s Law':'Series/Parallel');
+      if(kind==='ol'){
+        tabOL.classList.add('active'); tabEQ.classList.remove('active');
+        controlsOL.style.display='block'; controlsEQ.style.display='none';
+      }else{
+        tabEQ.classList.add('active'); tabOL.classList.remove('active');
+        controlsEQ.style.display='block'; controlsOL.style.display='none';
+      }
+      status.textContent='Status: Ready';
+    }
+
+    // ===== Label & input sync =====
+    function syncOL(){
+      VVal.textContent=(+VEl.value).toFixed(1);
+      RVal.textContent=(+REl.value).toFixed(1);
+      rVal.textContent=(+rEl.value).toFixed(1);
+      TVal.textContent=(+TEl.value).toFixed(0);
+      alphaVal.textContent=(+alphaEl.value).toFixed(4);
+      PrateVal.textContent=(+PrateEl.value).toFixed(2);
+      maxPtsVal.textContent=(+maxPtsEl.value).toFixed(0);
+      state.V=+VEl.value; state.R0=+REl.value; state.r=+rEl.value; state.T=+TEl.value; state.alpha=+alphaEl.value; state.Prate=+PrateEl.value; state.maxPts=+maxPtsEl.value;
+      updateOL();
+    }
+
+    function syncEQ(){
+      R1Val.textContent=(+R1El.value).toFixed(0);
+      R2Val.textContent=(+R2El.value).toFixed(0);
+      state.R1=+R1El.value; state.R2=+R2El.value;
+      updateEQ();
+    }
+
+    // ===== Calculations =====
+    function RT(){
+      return state.R0 * (1 + state.alpha*(state.T-25));
+    }
+
+    function updateOL(){
+      const Rload = RT();
+      const It = (state.V) / (Rload + state.r);
+      const P = It*It*Rload;
+      Vout.textContent = state.V.toFixed(2);
+      Iout.textContent = It.toFixed(3);
+      Rout.textContent = Rload.toFixed(2);
+      rOut.textContent = state.r.toFixed(2);
+      Pout.textContent = P.toFixed(3);
+
+      // LED state based on power
+      led.classList.remove('on','warn','bad');
+      if(state.power && It>0){
+        led.classList.add('on');
+        const ratio = P/state.Prate;
+        if(ratio>0.9 && ratio<=1.2) led.classList.add('warn');
+        if(ratio>1.2) led.classList.add('bad');
+        led.style.filter = `brightness(${clamp(0.6 + Math.min(ratio,2), 0.6, 2.5)})`;
+      }else{
+        led.style.filter = 'brightness(1)';
+      }
+
+      // Resistor glow with power
+      const glow = clamp(P/state.Prate, 0, 2);
+      resistor.style.boxShadow = `0 0 ${8+glow*12}px rgba(245,158,11,${Math.min(0.15+glow*0.35,0.8)})`;
+    }
+
+    function updateEQ(){
+      const Req_series = state.R1 + state.R2;
+      const Req_parallel = (state.R1*state.R2)/(state.R1+state.R2);
+      state.Req = state.eqMode==='series' ? Req_series : Req_parallel;
+      ReqOut.textContent = state.Req.toFixed(2)+ ' Ω ('+state.eqMode+')';
+    }
+
+    // ===== Plotting (V-I) =====
+    function addPlotPoint(V,I){
+      const w = plot.clientWidth, h = plot.clientHeight;
+      const Vmax = 24, Imax = 1; // scale (1 A max)
+      const x = clamp((V/Vmax)*w, 0, w-6);
+      const y = clamp(h - (I/Imax)*h, 0, h-6);
+      const dot=document.createElement('div'); dot.className='dot';
+      dot.style.left = x+'px'; dot.style.top = y+'px';
+      plot.appendChild(dot);
+      const pts=[...plot.querySelectorAll('.dot')];
+      if(pts.length>state.maxPts){ pts[0].remove(); }
+    }
+
+    function clearPlot(){
+      [...plot.querySelectorAll('.dot')].forEach(n=>n.remove());
+    }
+
+    // ===== Animation Loop (moves charge dot when power on) =====
+    const charge=$('#charge');
+    function loop(t){
+      if(state.lastT==null) state.lastT=t; const dt=Math.min(0.03,(t-state.lastT)/1000); state.lastT=t;
+      if(state.power){
+        const I = parseFloat(Iout.textContent);
+        // Speed proportional to current
+        const speed = clamp(60 + I*400, 60, 460); // px/s
+        const x = (parseFloat(charge.style.left)||160);
+        let nx = x + speed*dt;
+        if(nx>560){ nx = 160; }
+        charge.style.left = nx+'px';
+      }
+      requestAnimationFrame(loop);
+    }
+
+    // ===== Buttons & Events =====
+    toggle.addEventListener('click', (e)=>{
+      state.power=!state.power; e.target.textContent=state.power?'⏸ Power Off':'▶ Power On';
+      status.textContent=state.power?'Status: Powered':'Status: Off';
+      updateOL();
+    });
+
+    reset.addEventListener('click', ()=>{
+      VEl.value=5; REl.value=100; rEl.value=0; TEl.value=25; alphaEl.value=0.0039; PrateEl.value=0.25; maxPtsEl.value=50;
+      syncOL(); clearPlot(); state.power=false; toggle.textContent='▶ Power On'; state.lastT=null; status.textContent='Status: Reset';
+    });
+
+    tabOL.addEventListener('click', ()=>setActive('ol'));
+    tabEQ.addEventListener('click', ()=>setActive('eq'));
+
+    [VEl,REl,rEl,TEl,alphaEl,PrateEl,maxPtsEl].forEach(inp=>inp.addEventListener('input',()=>{syncOL(); status.textContent='Status: Parameters updated';}));
+    [R1El,R2El].forEach(inp=>inp.addEventListener('input',()=>{syncEQ(); status.textContent='Status: Eq tool updated';}));
+
+    modeSeriesBtn.addEventListener('click',()=>{state.eqMode='series'; updateEQ();});
+    modeParallelBtn.addEventListener('click',()=>{state.eqMode='parallel'; updateEQ();});
+    sendReqBtn.addEventListener('click',()=>{ if(state.Req){ REl.value=state.Req; syncOL(); setActive('ol'); status.textContent='Status: R_eq sent to main'; } });
+    resetEqBtn.addEventListener('click',()=>{ R1El.value=220; R2El.value=330; state.eqMode='series'; syncEQ(); });
+
+    markBtn.addEventListener('click',()=>{
+      const V=parseFloat(Vout.textContent), I=parseFloat(Iout.textContent);
+      addPlotPoint(V,I);
+    });
+    clearTrailBtn.addEventListener('click',clearPlot);
+
+    // Init
+    syncOL(); syncEQ(); setActive('ol');
+    requestAnimationFrame(loop);
+  </script>
+
+  
+
+<script>
+    const currentUser = "<%= curr_user ? curr_user.username : '' %>";
+  function extractResult() {
+    let V = document.getElementById("Vout").innerText;
+    let I = document.getElementById("Iout").innerText;
+    let R = document.getElementById("Rout").innerText;
+    let P = document.getElementById("Pout").innerText;
+
+    alert("data saved successfully");
+
+    // Agar backend me save karna ho
+    fetch("/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        experiment_name: "Ohm's Law",
+        done_by:  currentUser,
+        voltage: V,
+        current: I,
+        resistance: R,
+        power: P
+      })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Saved in DB:", data))
+    .catch(err => console.error("Error:", err));
+  }
+
+  function showAlert() {
+    document.getElementById("alert-container").innerHTML = `
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <p>Data saved successfully!</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    `;
+  }
+
+</script>
+
+
+</body>
+

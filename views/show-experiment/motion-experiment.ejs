@@ -1,0 +1,140 @@
+<% layout("layouts/boilerplate") %>
+
+<style>
+  .motion-wrapper {
+    margin: 0;
+    padding: 40px 20px;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #0f1220, #1a1f3b, #0f1220);
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+
+  .motion-header {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 50px;
+    background: linear-gradient(90deg,#22c55e,#3b82f6,#8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: glow 2s infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 10px #22c55e; }
+    to   { text-shadow: 0 0 20px #3b82f6; }
+  }
+
+  .motion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    gap: 25px;
+  }
+
+  .motion-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    padding: 25px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 25px rgba(59,130,246,0.2);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .motion-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(34,197,94,0.5);
+  }
+
+  .motion-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, #22c55e, #3b82f6, #8b5cf6, #22c55e);
+    animation: rotate 8s linear infinite;
+    z-index: 0;
+    opacity: 0.25;
+  }
+
+  @keyframes rotate {
+    100% { transform: rotate(360deg); }
+  }
+
+  .motion-card__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .motion-card__title {
+    margin: 0 0 15px;
+    font-size: 1.4rem;
+    color: #22c55e;
+  }
+
+  .motion-card__text {
+    margin: 8px 0;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .motion-highlight {
+    color: #3b82f6;
+    font-weight: bold;
+  }
+
+  .motion-back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #22c55e;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+
+  .motion-back-link:hover {
+    color: #8b5cf6;
+  }
+</style>
+
+<body>
+  <div class="motion-wrapper">
+    <a href="/" class="motion-back-link">⬅ Back</a>
+    <h1 class="motion-header" data-aos="fade-down">⚙️ Newton’s Motion Experiments</h1>
+
+    <div class="motion-grid">
+      <% experiments.forEach(m => { %>
+        <div class="motion-card" data-aos="zoom-in">
+          <div class="motion-card__content">
+            <h2 class="motion-card__title"><%= m.experiment %></h2>
+            <p class="motion-card__text">⚖️ Mass: <span class="motion-highlight"><%= m.mass %> kg</span></p>
+            <p class="motion-card__text">💨 Force: <span class="motion-highlight"><%= m.force %> N</span></p>
+            <p class="motion-card__text">⛰️ Incline Angle: <span class="motion-highlight"><%= m.angle %>°</span></p>
+            <p class="motion-card__text">🌍 Gravity: <span class="motion-highlight"><%= m.gravity %> m/s²</span></p>
+            <p class="motion-card__text">🧲 μs: <span class="motion-highlight"><%= m.mu_s %></span>, μk: <span class="motion-highlight"><%= m.mu_k %></span></p>
+            <hr>
+            <p class="motion-card__text">📈 Acceleration: <span class="motion-highlight"><%= m.A %> m/s²</span></p>
+            <p class="motion-card__text">🚀 Velocity: <span class="motion-highlight"><%= m.V %> m/s</span></p>
+            <p class="motion-card__text">📏 Displacement: <span class="motion-highlight"><%= m.X %> m</span></p>
+            <p class="motion-card__text">🧱 Normal Force: <span class="motion-highlight"><%= m.N %> N</span></p>
+            <p class="motion-card__text">🌀 Friction: <span class="motion-highlight"><%= m.F %> N</span></p>
+            <p class="motion-card__text">⚡ Net Force ΣF: <span class="motion-highlight"><%= m.netF %> N</span></p>
+            <p>Status: <%= m.status %></p>
+            <p class="motion-card__text">
+  🕒 Date: <%= m.created_at ? m.created_at.toLocaleString() : "N/A" %>
+</p>
+
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000, once: false });
+  </script>
+</body>

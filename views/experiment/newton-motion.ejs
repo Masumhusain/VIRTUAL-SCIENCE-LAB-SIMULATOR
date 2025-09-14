@@ -1,0 +1,403 @@
+
+<% layout("layouts/boilerplate") %>
+
+
+
+  <style>
+    :root{
+      --bg:#0f1220; --panel:#171a2a; --ink:#e5e7eb; --muted:#9aa0b4;
+      --accent:#6ee7ff; --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:radial-gradient(1200px 600px at 70% -10%,#1c2140 0%,var(--bg) 60%); min-height:100vh; display:grid; grid-template-rows:auto 1fr; gap:12px}
+    header{padding:18px 20px; display:flex; align-items:center; justify-content:space-between}
+    header h1{font-size:20px; margin:0}
+    header .badge{font-size:12px; color:var(--muted)}
+
+    .app{display:grid; grid-template-columns:340px 1fr; gap:16px; padding:0 16px 24px}
+
+    /* Panel */
+    .panel{background:linear-gradient(180deg, #1a1d32 0%, #121528 100%); border:1px solid #232744; border-radius:16px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.35)}
+    .panel h2{font-size:15px; margin:0 0 12px; color:#c9d2ff}
+    .field{margin:10px 0 16px}
+    .field label{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px}
+    .field input[type=range]{width:100%}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .btn{appearance:none; border:none; background:#232744; color:#e8ecff; padding:10px 12px; border-radius:12px; cursor:pointer; transition:transform .05s ease, background .2s}
+    .btn:hover{background:#2a2f52}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:linear-gradient(135deg,#3b82f6,#06b6d4)}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .note{font-size:11px; color:var(--muted); line-height:1.4}
+    .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#232744; color:#cfe6ff; font-size:12px}
+
+    /* Scene */
+    .scene{position:relative; background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.0)); border:1px solid #232744; border-radius:16px; overflow:hidden; min-height:520px}
+    .toolbar{position:absolute; right:16px; top:16px; display:flex; gap:8px; z-index:10}
+    .readout{position:absolute; left:16px; top:16px; display:flex; gap:8px; flex-wrap:wrap; z-index:10}
+    .chip{font-size:12px; padding:6px 10px; border-radius:999px; background:#232744; color:#cfe6ff}
+
+    /* Stage */
+    .stage{position:absolute; inset:0; display:grid; place-items:center}
+    .world{position:relative; width:900px; height:420px;}
+    .ground{position:absolute; left:50%; transform-origin:center; transform:translateX(-50%) rotate(0deg); bottom:80px; width:860px; height:10px; background:#2a2f52; border-radius:6px; box-shadow:0 6px 20px rgba(0,0,0,.35) inset}
+    .incline-angle{position:absolute; bottom:92px; left:50%; transform:translateX(-50%); font-size:11px; color:var(--muted)}
+
+    /* Block */
+    .block{position:absolute; width:90px; height:60px; background:linear-gradient(180deg,#94a3b8,#475569); border:1px solid #7a8699; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.45); left:120px; bottom:90px; display:grid; place-items:center}
+    .block .mass{font-size:12px; color:#0b1220; background:rgba(255,255,255,.7); padding:2px 8px; border-radius:999px}
+
+    /* Vector arrows */
+    .arrow{position:absolute; height:4px; background:#60a5fa; transform-origin:0 50%; border-radius:2px; opacity:.95}
+    .arrow::after{content:""; position:absolute; right:-10px; top:50%; transform:translateY(-50%); border:6px solid transparent; border-left-color:#60a5fa}
+    .arrow.label{height:auto; background:transparent}
+    .arrow .tag{position:absolute; top:-20px; left:4px; font-size:11px; color:#cfe6ff}
+
+    /* HUD table */
+    .hud{position:absolute; bottom:16px; left:16px; right:16px; background:#0f1328aa; border:1px solid #232744; border-radius:12px; padding:10px; display:grid; grid-template-columns:repeat(6,1fr); gap:8px}
+    .hud .cell{font-size:12px; color:#cfe6ff; background:#1b2142; border:1px solid #232744; border-radius:8px; padding:8px}
+
+    footer{font-size:11px; color:var(--muted); text-align:center; padding:8px 0 18px}
+    .legend{display:flex; gap:8px; flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <header>
+    <button class="btn btn-success" onclick="extractResultNewton()">Save Result</button>
+   <a  class="btn btn-primary" href="/experiments">go in experiments</a>
+    <h1>Newton’s Laws Virtual Lab <span class="badge">(HTML/CSS/JS only)</span></h1>
+    <div class="pill">🧭 Forces • Friction • Incline</div>
+  </header>
+
+  <div class="app">
+    <!-- Controls -->
+    <section class="panel" id="controls">
+      <h2>Setup</h2>
+
+      <div class="field">
+        <label>Mass: <span><span id="massVal">5.0</span> kg</span></label>
+        <input id="mass" type="range" min="0.5" max="20" step="0.5" value="5" />
+      </div>
+      <div class="field">
+        <label>Applied Force (→ uphill): <span><span id="forceVal">10</span> N</span></label>
+        <input id="force" type="range" min="0" max="150" step="1" value="10" />
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Incline Angle: <span><span id="angleVal">0</span>°</span></label>
+          <input id="angle" type="range" min="0" max="30" step="1" value="0" />
+        </div>
+        <div class="field">
+          <label>Gravity g: <span><span id="gVal">9.81</span> m/s²</span></label>
+          <input id="grav" type="range" min="0" max="19.62" step="0.01" value="9.81" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>μ<sub>s</sub> (static): <span><span id="musVal">0.40</span></label>
+          <input id="mus" type="range" min="0" max="1" step="0.01" value="0.40" />
+        </div>
+        <div class="field">
+          <label>μ<sub>k</sub> (kinetic): <span><span id="mukVal">0.30</span></label>
+          <input id="muk" type="range" min="0" max="1" step="0.01" value="0.30" />
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="reset">Reset</button>
+        <button class="btn primary" id="toggle">▶ Play</button>
+      </div>
+
+      <div class="legend" style="margin-top:8px">
+        <span class="pill">Law 1: Net force 0 ⇒ rest/uniform motion</span>
+        <span class="pill">Law 2: F = m·a</span>
+        <span class="pill">Law 3: Action ↔ Reaction (N vs mg⊥)</span>
+      </div>
+      <p class="note">Model: 2D motion along the incline. Positive direction is uphill. Static friction prevents motion until |F<sub>applied</sub> − m g sinθ| ≤ μ<sub>s</sub> N. When moving, kinetic friction f<sub>k</sub>=μ<sub>k</sub>N opposes motion.</p>
+    </section>
+
+    <!-- Scene -->
+    <section class="scene" aria-label="physics scene">
+      <div class="toolbar">
+        <button class="btn" id="nudge">Impulse (+2 m/s)</button>
+        <button class="btn" id="zeroV">Zero velocity</button>
+      </div>
+      <div class="readout">
+        <div class="chip" id="status">Status: Ready</div>
+        <div class="chip" id="mode">Regime: Static</div>
+      </div>
+
+      <div class="stage">
+        <div class="world" id="world">
+          <div class="ground" id="ground"></div>
+          <div class="incline-angle">θ = <span id="angleLabel">0</span>°</div>
+          <div class="block" id="block">
+            <div class="mass" id="massChip">5.0 kg</div>
+          </div>
+
+          <!-- Force vectors -->
+          <div class="arrow" id="Fapp"><span class="tag">F<sub>app</sub></span></div>
+          <div class="arrow" id="Fgrav"><span class="tag">m g</span></div>
+          <div class="arrow" id="Fnorm"><span class="tag">N</span></div>
+          <div class="arrow" id="Ffric"><span class="tag">f</span></div>
+        </div>
+
+        <!-- HUD -->
+        <div class="hud" id="hud">
+          <div class="cell">a = <span id="aOut">0.00</span> m/s²</div>
+          <div class="cell">v = <span id="vOut">0.00</span> m/s</div>
+          <div class="cell">x = <span id="xOut">0.00</span> m</div>
+          <div class="cell">N = <span id="nOut">0.00</span> N</div>
+          <div class="cell">f = <span id="fOut">0.00</span> N</div>
+          <div class="cell">ΣF = <span id="sumFOut">0.00</span> N</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ---------- Helpers ----------
+    const $ = (s, el=document)=>el.querySelector(s);
+    const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+    const sign = v => (v>0)-(v<0);
+
+    // Elements
+    const massEl = $('#mass'); const forceEl = $('#force');
+    const angleEl = $('#angle'); const gravEl = $('#grav');
+    const musEl = $('#mus'); const mukEl = $('#muk');
+
+    const massVal=$('#massVal'), forceVal=$('#forceVal'), angleVal=$('#angleVal'), gVal=$('#gVal'), musVal=$('#musVal'), mukVal=$('#mukVal');
+    const angleLabel=$('#angleLabel');
+
+    const ground=$('#ground'), world=$('#world'), block=$('#block');
+    const massChip=$('#massChip');
+    const status=$('#status'), mode=$('#mode');
+
+    const aOut=$('#aOut'), vOut=$('#vOut'), xOut=$('#xOut'), nOut=$('#nOut'), fOut=$('#fOut'), sumFOut=$('#sumFOut');
+
+    const FappEl=$('#Fapp'), FgravEl=$('#Fgrav'), FnormEl=$('#Fnorm'), FfricEl=$('#Ffric');
+
+    // Simulation state (along plane)
+    const state={
+      m:5, Fapp:10, theta:0, g:9.81, mus:0.4, muk:0.3,
+      x:0, v:0, a:0, playing:false, lastT:null
+    };
+
+    function updateLabels(){
+      massVal.textContent=(+massEl.value).toFixed(1);
+      forceVal.textContent=(+forceEl.value).toFixed(0);
+      angleVal.textContent=(+angleEl.value).toFixed(0);
+      gVal.textContent=(+gravEl.value).toFixed(2);
+      musVal.textContent=(+musEl.value).toFixed(2);
+      mukVal.textContent=(+mukEl.value).toFixed(2);
+
+      state.m=+massEl.value; state.Fapp=+forceEl.value; state.theta=(+angleEl.value)*Math.PI/180;
+      state.g=+gravEl.value; state.mus=+musEl.value; state.muk=+mukEl.value;
+
+      massChip.textContent=`${state.m.toFixed(1)} kg`;
+      angleLabel.textContent=(angleEl.value);
+      ground.style.transform=`translateX(-50%) rotate(${-angleEl.value}deg)`; // ground rotates, block stays visually level
+    }
+
+    function placeBlock(){
+      // map x (meters) to pixels along ground length (~ 7.5 m visual span)
+      const mToPx = 90; // pixels per meter (tunable)
+      const px = 120 + state.x*mToPx;
+      block.style.left = px + 'px';
+      // position vectors at block
+      const rect = block.getBoundingClientRect();
+      const wrect = world.getBoundingClientRect();
+      const bx = rect.left - wrect.left + rect.width/2; // center
+      const by = rect.top - wrect.top + rect.height/2;
+      positionVectors(bx,by);
+    }
+
+    function positionVectors(cx,cy){
+      // Vector magnitudes to pixel lengths (visual scale)
+      const Nscale = 1.5; // px per N for gravity/normal
+      const Fscale = 1.0; // px per N for tangential forces
+
+      const theta = state.theta;
+      const mg = state.m*state.g; // total weight
+      const N = mg*Math.cos(theta);
+      const Fg_parallel = mg*Math.sin(theta);
+
+      // Applied force (up-slope)
+      drawArrow(FappEl, cx, cy, Fscale*state.Fapp, theta, 'upslope');
+      // Gravity (vertical down in world frame)
+      drawArrow(FgravEl, cx, cy, Nscale*mg, Math.PI/2, 'down');
+      // Normal (perpendicular to plane)
+      drawArrow(FnormEl, cx, cy, Nscale*N, theta - Math.PI/2, 'normal');
+      // Friction (opposes motion or would-be motion)
+      const fricMag = currentFrictionMag();
+      const dir = frictionDirection();
+      drawArrow(FfricEl, cx, cy, Fscale*fricMag, theta + (dir>0?0:Math.PI), 'fric');
+    }
+
+    function drawArrow(el, cx, cy, len, angle, kind){
+      const x = cx, y = cy;
+      el.style.left = (x)+'px';
+      el.style.top = (y)+'px';
+      el.style.width = Math.max(0, len) + 'px';
+      el.style.transform = `translateY(-50%) rotate(${angle*180/Math.PI}deg)`;
+    }
+
+    // Physics core (1D along plane)
+    function currentFrictionMag(){
+      const N = state.m*state.g*Math.cos(state.theta);
+      const want = Math.abs(state.Fapp - state.m*state.g*Math.sin(state.theta));
+      const v = state.v;
+      if(Math.abs(v) < 1e-4){
+        const fmax = state.mus * N;
+        if(want <= fmax){ return want; } // static, exactly cancels net tendency
+        return state.muk * N; // will start moving: use kinetic threshold
+      }else{
+        return state.muk * N; // moving
+      }
+    }
+
+    function frictionDirection(){
+      const v = state.v;
+      if(Math.abs(v) >= 1e-4) return -sign(v); // oppose motion
+      // at rest: oppose would-be motion from (Fapp - mg sinθ)
+      const trend = state.Fapp - state.m*state.g*Math.sin(state.theta);
+      return -sign(trend) || -1; // default to downslope opposition
+    }
+
+    function computeAccel(){
+      const theta = state.theta;
+      const mg_sin = state.m*state.g*Math.sin(theta);
+      const N = state.m*state.g*Math.cos(theta);
+      const trend = state.Fapp - mg_sin;
+      const v = state.v;
+
+      // Static check
+      if(Math.abs(v) < 1e-4){
+        const f_s_max = state.mus * N;
+        if(Math.abs(trend) <= f_s_max){
+          // Static regime
+          mode.textContent = 'Regime: Static (Law 1)';
+          return 0;
+        }
+      }
+      // Kinetic regime
+      mode.textContent = 'Regime: Kinetic (Law 2)';
+      const f_k = state.muk * N;
+      const fric = f_k * sign(v || trend); // oppose motion or initial trend
+      const sumF = state.Fapp - mg_sin - fric;
+      return sumF / state.m;
+    }
+
+    function step(dt){
+      // Integrate motion
+      state.a = computeAccel();
+      state.v += state.a * dt;
+
+      // small damping to avoid jitter when nearly static
+      if(Math.abs(state.a) < 1e-4 && Math.abs(state.v) < 0.02){ state.v = 0; }
+
+      state.x += state.v * dt;
+      // clamp within world bounds (0..7m)
+      state.x = clamp(state.x, 0, 7.5);
+
+      // HUD
+      const theta = state.theta; const N = state.m*state.g*Math.cos(theta);
+      const fr = currentFrictionMag();
+      const dir = frictionDirection();
+      const mg_sin = state.m*state.g*Math.sin(theta);
+      const sumF = state.Fapp - mg_sin - fr * (dir>0?1:-1);
+
+      aOut.textContent = state.a.toFixed(2);
+      vOut.textContent = state.v.toFixed(2);
+      xOut.textContent = state.x.toFixed(2);
+      nOut.textContent = N.toFixed(2);
+      fOut.textContent = fr.toFixed(2);
+      sumFOut.textContent = sumF.toFixed(2);
+
+      placeBlock();
+    }
+
+    function loop(t){
+      if(!state.playing){ state.lastT = t; return requestAnimationFrame(loop); }
+      if(state.lastT==null) state.lastT=t;
+      const dt = Math.min(0.03, (t - state.lastT)/1000); // cap dt for stability
+      state.lastT = t;
+      step(dt);
+      requestAnimationFrame(loop);
+    }
+
+    // UI events
+    [massEl, forceEl, angleEl, gravEl, musEl, mukEl].forEach(inp=>{
+      inp.addEventListener('input', ()=>{ updateLabels(); status.textContent='Status: Parameters updated'; placeBlock(); });
+    });
+
+    $('#toggle').addEventListener('click', (e)=>{
+      state.playing = !state.playing;
+      e.target.textContent = state.playing ? '⏸ Pause' : '▶ Play';
+      status.textContent = state.playing ? 'Status: Running' : 'Status: Paused';
+    });
+
+    $('#reset').addEventListener('click', ()=>{
+      massEl.value=5; forceEl.value=10; angleEl.value=0; gravEl.value=9.81; musEl.value=0.4; mukEl.value=0.3;
+      state.x=0; state.v=0; state.a=0; state.playing=false; state.lastT=null;
+      $('#toggle').textContent='▶ Play';
+      updateLabels(); placeBlock(); status.textContent='Status: Reset';
+    });
+
+    $('#nudge').addEventListener('click', ()=>{ state.v+=2; status.textContent='Status: Impulse applied'; });
+    $('#zeroV').addEventListener('click', ()=>{ state.v=0; status.textContent='Status: Velocity set to 0'; });
+
+    // Init
+    updateLabels(); placeBlock();
+    requestAnimationFrame(loop);
+  </script>
+    
+<script>
+    const currentUser = "<%= curr_user ? curr_user.username : '' %>";
+
+    function extractResultNewton() {
+      let massM = document.getElementById("mass").value 
+      let forceM = document.getElementById("force").value
+      let angleM = document.getElementById("angle").value
+      let gravityM = document.getElementById("grav").value
+      let mu_sM = document.getElementById("mus").value
+      let mu_kM = document.getElementById("muk").value
+
+      let aM = document.getElementById("aOut").innerText
+      let vM = document.getElementById("vOut").innerText
+      let xM = document.getElementById("xOut").innerText
+      let NM = document.getElementById("nOut").innerText
+      let fM = document.getElementById("fOut").innerText
+      let netFM = document.getElementById("sumFOut").innerText
+
+      alert("data saved successfully");
+
+      // Backend me send karo (keys schema ke hisaab se)
+      fetch("/save-motion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          experiment_name: "Newton motion",
+          done_by: currentUser,
+          mass: massM,
+          force: forceM,
+          angle: angleM,
+          gravity: gravityM,
+          mu_s: mu_sM,   // ✅ correct key
+          mu_k: mu_kM,   // ✅ correct key
+          a: aM,         // ✅ lowercase
+          v: vM, 
+          x: xM, 
+          N: NM,
+          f: fM,
+          netF: netFM,   // ✅ correct key
+        })
+      })
+      .then(res => res.json())
+      .then(data => console.log("Saved in DB:", data))
+      .catch(err => console.error("Error:", err));
+    };
+</script>
+
+</body>
+

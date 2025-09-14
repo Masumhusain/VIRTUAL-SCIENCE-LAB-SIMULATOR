@@ -1,0 +1,497 @@
+<% layout("layouts/boilerplate") %>
+
+<!-- AOS CSS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+  body {
+    background-color: #13172a;
+  }
+
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 50px;
+  }
+
+  .card {
+    border-radius: 15px;
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .card i {
+    font-size: 40px;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+  .card-container  {
+    color: #111;
+  }
+
+  .card:hover {
+    transform: translateY(-10px);
+  }
+
+  .experiment {
+    text-align: center;
+    margin-top: 50px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+  }
+
+  .save-experiment button {
+    margin-top: 10px;
+  }
+
+
+
+
+
+
+  
+</style>
+
+<body>
+  <section class="py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <!-- Left side (Text) -->
+        <div class="col-md-6 text-center text-md-start" data-aos="fade-right">
+          <h1 class="display-4 fw-bold text-white">Welcome to Virtual Science Lab</h1>
+          <p class="lead text-white">
+            Do physics & chemistry experiments virtually, anytime & anywhere!
+          </p>
+          <button onclick="document.getElementById('cards').scrollIntoView({behavior:'smooth'})"
+            class="btn btn-primary btn-lg mt-3">Get Started</button>
+        </div>
+
+        <!-- Right side (Image) -->
+        <div class="col-md-6 text-center" data-aos="fade-left">
+          <img src="/images/labo.png" width="100%" alt="">
+        </div>
+      </div>
+
+      <!-- feature section  -->
+      <div class="card-container">
+        <!-- first  -->
+        <div class="card bg-light" style="width: 18rem;" data-aos="zoom-in" data-aos-delay="100">
+          <i class="fa-solid fa-atom"></i>
+          <p class="card-text mt-2">Physics Simulations</p>
+        </div>
+
+        <!-- second  -->
+        <div class="card bg-light" style="width: 18rem;" data-aos="zoom-in" data-aos-delay="200">
+          <i class="fa-solid fa-flask-vial"></i>
+          <p class="card-text mt-2">Chemistry Experiments</p>
+        </div>
+
+        <!-- third  -->
+        <div class="card bg-light" style="width: 18rem;" data-aos="zoom-in" data-aos-delay="300">
+          <i class="fa-solid fa-arrow-up-right-dots"></i>
+          <p class="card-text mt-2">Step by Step Guidance</p>
+        </div>
+      </div>
+
+      <!-- explore experiment section   -->
+      <div id="cards" class="card-container w-100">
+        <!-- first experiment -->
+        <div class="card mt-4 card-img bg-light" style="width: 18rem;" data-aos="fade-up">
+          <img src="/images/ohmlaw.png" class="card-img-top" alt="ohm law image">
+          <div class="card-body">
+            <h5 class="card-title text-dark">Ohm's Law</h5>
+            <a href="/ohms" class="btn btn-primary">Start</a>
+          </div>
+        </div>
+
+        <!-- second experiment -->
+        <div class="card mt-4 card-img bg-light" style="width: 18rem;" data-aos="fade-up" data-aos-delay="200">
+          <img src="/images/acid.webp" class="card-img-top" alt="acid base reaction">
+          <div class="card-body">
+            <h5 class="card-title text-dark">Acid-Base Reaction</h5>
+            <a href="/acid-base-reaction" class="btn btn-primary">Start</a>
+          </div>
+        </div>
+
+        <!-- third experiment -->
+        <div class="card mt-4 card-img bg-light" style="width: 18rem;" data-aos="fade-up" data-aos-delay="400">
+          <img src="/images/newtons.webp" class="card-img-top" alt="newtons law">
+          <div class="card-body">
+            <h5 class="card-title text-dark">Newton's Motion</h5>
+            <a href="/newtons-motion" class="btn btn-primary">Start</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- save experiment section   -->
+      <div class="experiment mt-4" data-aos="flip-up">
+        <h3 class="text-white">Explore Experiments</h3>
+        <div class="save-experiment">
+          <p class="bold text-white">Saved experiments Section</p>
+         <a class="btn btn-success" href="/experiments-saved">Show</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- //extra section  -->
+   <section class="py-5 bg-dark text-white" data-aos="fade-up">
+  <div class="container text-center">
+    <h2 class="mb-4">⚡ How It Works</h2>
+    <div class="row">
+      <div class="col-md-3" data-aos="zoom-in">
+        <h3>1️⃣</h3>
+        <p>Choose your experiment</p>
+      </div>
+      <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
+        <h3>2️⃣</h3>
+        <p>Set parameters with sliders</p>
+      </div>
+      <div class="col-md-3" data-aos="zoom-in" data-aos-delay="400">
+        <h3>3️⃣</h3>
+        <p>Observe results & graphs</p>
+      </div>
+      <div class="col-md-3" data-aos="zoom-in" data-aos-delay="600">
+        <h3>4️⃣</h3>
+        <p>Save & share your findings</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+ <!-- benifit section  -->
+  <section class="py-5" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-5 text-white">🌟 Why Choose Virtual Science Lab?</h2>
+    <div class="row text-center text-white">
+      <div class="col-md-4" data-aos="flip-left">
+        <h4>💻 100% Online</h4>
+        <p>No equipment needed, just your browser.</p>
+      </div>
+      <div class="col-md-4" data-aos="flip-left" data-aos-delay="200">
+        <h4>📊 Real-Time Results</h4>
+        <p>Instant feedback with interactive graphs.</p>
+      </div>
+      <div class="col-md-4" data-aos="flip-left" data-aos-delay="400">
+        <h4>🎓 Learn Anywhere</h4>
+        <p>Perfect for students & teachers worldwide.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- student feedback  -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">💬 What Students Say</h2>
+    <div class="row g-4">
+      
+      <!-- Card 1 -->
+      <div class="col-md-4 d-flex" data-aos="zoom-in">
+        <div class="card p-3 flex-fill h-100 shadow">
+          <p>"This virtual lab made physics so much fun!"</p>
+          <h6>- Anjali, Class 10</h6>
+        </div>
+      </div>
+      
+      <!-- Card 2 -->
+      <div class="col-md-4 d-flex" data-aos="zoom-in" data-aos-delay="200">
+        <div class="card p-3 flex-fill h-100 shadow">
+          <p>"Best tool for learning without lab access."</p>
+          <h6>- Rohit, B.Sc Student</h6>
+        </div>
+      </div>
+      
+      <!-- Card 3 -->
+      <div class="col-md-4 d-flex" data-aos="zoom-in" data-aos-delay="400">
+        <div class="card p-3 flex-fill h-100 shadow">
+          <p>"Saved me during lockdown, awesome experience."</p>
+          <h6>- Priya, School Teacher</h6>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- subject and section  -->
+<section class="py-5 bg-light" data-aos="fade-up">
+  <div class="container text-center">
+    <h2 class="mb-4">📚 Explore Subjects</h2>
+    <div class="row g-4">
+      
+      <!-- Physics -->
+      <div class="col-md-4 d-flex" data-aos="flip-left">
+        <div class="card p-4 h-100 flex-fill shadow">
+          <h3>⚛️ Physics</h3>
+          <p>Motion, Electricity, Waves, and more.</p>
+        </div>
+      </div>
+      
+      <!-- Chemistry -->
+      <div class="col-md-4 d-flex" data-aos="flip-left" data-aos-delay="200">
+        <div class="card p-4 h-100 flex-fill shadow">
+          <h3>🧪 Chemistry</h3>
+          <p>Acids, Bases, Reactions, and solutions.</p>
+        </div>
+      </div>
+      
+      <!-- Biology -->
+      <div class="col-md-4 d-flex" data-aos="flip-left" data-aos-delay="400">
+        <div class="card p-4 h-100 flex-fill shadow">
+          <h3>🧬 Biology</h3>
+          <p>Cells, Genetics, Human body simulations.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- freeqeuntly asked question  -->
+
+      <!-- FAQ Item -->
+      <section class="py-5" data-aos="fade-up">
+  <div class="container">
+    <h2 class="text-center mb-4 text-white">❓ Frequently Asked Questions</h2>
+    <div class="accordion" id="faqAccordion">
+
+      <!-- Q1 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q1">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#a1">
+            Is this lab free to use?
+          </button>
+        </h2>
+        <div id="a1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            ✅ Yes! All simulations are completely free to explore.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q2">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a2">
+            Do I need any software to use it?
+          </button>
+        </h2>
+        <div id="a2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            💻 No extra software – only a browser & internet needed.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q3">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a3">
+            Can teachers use this in classrooms?
+          </button>
+        </h2>
+        <div id="a3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            🎓 Absolutely! It's designed for both students & teachers.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q4">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a4">
+            Do I need to create an account?
+          </button>
+        </h2>
+        <div id="a4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            🔑 No account needed for basic access. However, signing up helps you save progress.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q5">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a5">
+            Can I use it on mobile?
+          </button>
+        </h2>
+        <div id="a5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            📱 Yes, it’s mobile-friendly and works on phones & tablets.
+          </div>
+        </div>
+      </div>
+
+      <!-- Q6 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="q6">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#a6">
+            How can I contact support?
+          </button>
+        </h2>
+        <div id="a6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            📧 You can reach us anytime via the <strong>Contact Us</strong> page.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- upcomming experiment  -->
+<section class="py-5 bg-light" data-aos="fade-up">
+  <div class="container text-center">
+    <h2 class="mb-4">🛠 Upcoming Experiments</h2>
+    <ul class="list-unstyled fs-5">
+      <li data-aos="fade-right" data-aos-delay="100">⚡ Electricity – Parallel Circuits</li>
+      <li data-aos="fade-right" data-aos-delay="200">🌡 Chemistry – Thermodynamics</li>
+      <li data-aos="fade-right" data-aos-delay="300">🔭 Physics – Optics & Lenses</li>
+      <li data-aos="fade-right" data-aos-delay="400">🧬 Biology – DNA & Genetics</li>
+    </ul>
+  </div>
+</section>
+
+<!-- meet the creator  -->
+<section class="py-5 bg-dark text-white text-center" data-aos="fade-up">
+  <div class="container">
+    <h2>👨‍💻 About the Creator</h2>
+    <p class="mt-3">
+      Hi, I'm <b>Masum Husain</b> – the creator of Virtual Science Lab.  
+      My mission is to make science learning fun, accessible, and interactive  
+      for students around the world 🌍.
+    </p>
+    <img src="/images/authorImg.jpg" class="box-square mt-3" width="60" alt="Author">
+  </div>
+</section>
+
+<!-- testimonials section  -->
+ <section class="py-5 bg-light text-dark text-center" data-aos="fade-up">
+  <div class="container">
+    <h2>⭐ What Students Say</h2>
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <p>"This virtual lab helped me understand Ohm’s Law easily!"</p>
+        <h6>- Priya, Class 10</h6>
+      </div>
+      <div class="col-md-4">
+        <p>"Now I can do experiments at home without any equipment!"</p>
+        <h6>- Arjun, Class 12</h6>
+      </div>
+      <div class="col-md-4">
+        <p>"A fun way to learn physics and chemistry. Love it!"</p>
+        <h6>- Sneha, College</h6>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- science fact section   -->
+ <section class="py-5 bg-info text-white text-center" data-aos="fade-up">
+  <div class="container">
+    <h2>🔬 Did You Know?</h2>
+    <ul class="list-unstyled mt-3">
+      <li>⚡ Lightning is 5 times hotter than the sun’s surface!</li>
+      <li>💧 Water can boil and freeze at the same time in space.</li>
+      <li>🧲 Earth is the biggest magnet you’ll ever stand on.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- gallery lab screenshot section  -->
+<section class="py-5 bg-light text-center" data-aos="fade-up">
+  <div class="container">
+    <h2 class="mb-5 fw-bold">🧪 Explore Our Experiments</h2>
+    <div class="row g-4 justify-content-center">
+      
+      <!-- Card 1 -->
+      <div class="col-md-4 d-flex" data-aos="flip-left">
+        <div class="card h-100 shadow-lg border-0 rounded-4 flex-fill p-4 experiment-card">
+          <div class="circle-img mx-auto mb-3">
+            <img src="/images/ohmsc.jpeg" alt="Ohm's Law" class="img-fluid">
+          </div>
+          <h5 class="fw-bold">⚡ Ohm's Law</h5>
+          <p class="text-muted">Understand the relation between Voltage, Current & Resistance.</p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-md-4 d-flex" data-aos="flip-left" data-aos-delay="200">
+        <div class="card h-100 shadow-lg border-0 rounded-4 flex-fill p-4 experiment-card">
+          <div class="circle-img mx-auto mb-3">
+            <img src="/images/acidscs.jpeg" alt="Acid Base Reaction" class="img-fluid">
+          </div>
+          <h5 class="fw-bold">🧪 Acid-Base Reaction</h5>
+          <p class="text-muted">Perform chemical reactions virtually with instant results.</p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="col-md-4 d-flex" data-aos="flip-left" data-aos-delay="400">
+        <div class="card h-100 shadow-lg border-0 rounded-4 flex-fill p-4 experiment-card">
+          <div class="circle-img mx-auto mb-3">
+            <img src="/images/motionfox.webp" alt="Newton's Motion" class="img-fluid">
+          </div>
+          <h5 class="fw-bold">🚀 Newton's Motion</h5>
+          <p class="text-muted">Visualize Newton’s Laws with interactive animations.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Extra CSS -->
+<!-- <style>
+  .experiment-card {
+    background: linear-gradient(135deg, #ffffff, #f7f9fc);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .experiment-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+  }
+  .circle-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #007bff;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  }
+  .circle-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .circle-img:hover img {
+    transform: scale(1.2);
+  }
+</style> -->
+
+
+
+
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 1000,
+      once: false // 👈 हर बार scroll पर animation repeat होगा
+    });
+  </script>
+</body>

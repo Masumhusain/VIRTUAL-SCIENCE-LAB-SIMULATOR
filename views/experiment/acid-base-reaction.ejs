@@ -1,0 +1,326 @@
+<% layout("layouts/boilerplate") %>
+  <style>
+    :root{
+      --bg:#0f1220; --panel:#171a2a; --ink:#e5e7eb; --muted:#9aa0b4;
+      --accent:#6ee7ff; --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--ink); background:radial-gradient(1200px 600px at 70% -10%,#1c2140 0%,var(--bg) 60%); min-height:100vh; display:grid; grid-template-rows:auto 1fr; gap:12px}
+    header{padding:18px 20px; display:flex; align-items:center; justify-content:space-between}
+    header h1{font-size:20px; margin:0}
+    header .badge{font-size:12px; color:var(--muted)}
+
+    .app{display:grid; grid-template-columns:340px 1fr; gap:16px; padding:0 16px 24px}
+
+    /* Control panel */
+    .panel{background:linear-gradient(180deg, #1a1d32 0%, #121528 100%); border:1px solid #232744; border-radius:16px; padding:16px; box-shadow:0 8px 30px rgba(0,0,0,.35)}
+    .panel h2{font-size:15px; margin:0 0 12px; color:#c9d2ff}
+    .field{margin:10px 0 16px}
+    .field label{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px}
+    .field input[type=range]{width:100%}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+    .btn{appearance:none; border:none; background:#232744; color:#e8ecff; padding:10px 12px; border-radius:12px; cursor:pointer; transition:transform .05s ease, background .2s}
+    .btn:hover{background:#2a2f52}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:linear-gradient(135deg,#3b82f6,#06b6d4)}
+    .btn.primary:hover{filter:brightness(1.05)}
+    .note{font-size:11px; color:var(--muted); line-height:1.4}
+    .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#232744; color:#cfe6ff; font-size:12px}
+
+    /* Scene */
+    .scene{position:relative; background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(0,0,0,.0)); border:1px solid #232744; border-radius:16px; overflow:hidden}
+    .toolbar{position:absolute; right:16px; top:16px; display:flex; gap:8px; z-index:10}
+    .readout{position:absolute; left:16px; top:16px; display:flex; gap:8px; flex-wrap:wrap; z-index:10}
+    .chip{font-size:12px; padding:6px 10px; border-radius:999px; background:#232744; color:#cfe6ff}
+
+    /* 3D-ish Lab Bench */
+    .stage{position:absolute; inset:0; perspective:900px}
+    .bench{position:absolute; left:50%; transform:translateX(-50%) rotateX(50deg); bottom:-120px; width:1100px; height:700px; background:linear-gradient(180deg,#0c0f1f,#0a0d1b); border-top:1px solid #2a2f52; box-shadow:0 -40px 120px rgba(0,0,0,.45) inset; border-radius:22px}
+
+    /* Beakers */
+    .vessel{position:absolute; width:180px; height:240px; transform-style:preserve-3d; filter:drop-shadow(0 14px 30px rgba(0,0,0,.45));}
+    .vessel .glass{position:absolute; inset:0; border-radius:14px; background:linear-gradient(180deg, rgba(255,255,255,.15), rgba(255,255,255,.03)); border:1px solid rgba(200,220,255,.25)}
+    .vessel .rim{position:absolute; left:50%; transform:translateX(-50%); top:-10px; width:90%; height:18px; border-radius:999px; background:radial-gradient(ellipse at center, rgba(255,255,255,.5), rgba(255,255,255,0) 70%); border:1px solid rgba(255,255,255,.25)}
+    .vessel .base-ellipse{position:absolute; left:50%; transform:translateX(-50%); bottom:-10px; width:90%; height:18px; border-radius:999px; background:radial-gradient(ellipse at center, rgba(255,255,255,.15), rgba(255,255,255,0) 70%); border:1px solid rgba(255,255,255,.2)}
+
+    /* Liquids */
+    .liquid{position:absolute; left:6%; width:88%; bottom:10px; border-bottom-left-radius:12px; border-bottom-right-radius:12px; overflow:hidden; height:0}
+    .liquid .fill{position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,.05)), radial-gradient(100px 30px at 50% 5%, rgba(255,255,255,.35), transparent 70%); mix-blend:screen}
+    .liquid .surface{position:absolute; left:50%; transform:translate(-50%, -50%); top:0; width:98%; height:16px; border-radius:999px; background:radial-gradient(ellipse, rgba(255,255,255,.6), rgba(255,255,255,.05) 70%); border:1px solid rgba(255,255,255,.2)}
+
+    /* Positions */
+    #acid{left:16%; top:10%}
+    #base{left:66%; top:10%}
+    #mix{left:41%; top:4%}
+
+    /* Indicator */
+    .indicator-preview{height:28px; border-radius:10px; border:1px solid #2a2f52; background:#334155}
+
+    /* Pour animation */
+    .vessel.pouring{animation:tilt 2s ease-in-out forwards}
+    @keyframes tilt{0%{transform:rotateZ(0)}30%{transform:rotateZ(-35deg)}70%{transform:rotateZ(-35deg)}100%{transform:rotateZ(0)}}
+
+    /* Ions */
+    .ion{position:absolute; width:10px; height:10px; border-radius:999px; background:#cfe6ff; opacity:.85; filter:blur(.2px)}
+
+    footer{font-size:11px; color:var(--muted); text-align:center; padding:8px 0 18px}
+    code.tag{padding:.2em .45em; background:#232744; border-radius:6px; color:#cfe6ff}
+    .legend{display:flex; gap:8px; flex-wrap:wrap}
+    .legend .dot{width:10px; height:10px; border-radius:50%; display:inline-block; vertical-align:middle; margin-right:6px}
+  </style>
+</head>
+<body>
+  <header>
+     <button class="btn btn-success" onclick="extractResultAcid()">Save Result</button>
+    <h1>Virtual Acid–Base Lab</h1>
+    <div class="pill">⚗️ Strong Acid/Strong Base Neutralization</div>
+  </header>
+
+  <div class="app">
+    <!-- Controls -->
+    <section class="panel" id="controls">
+      <h2>Setup</h2>
+      <div class="field">
+        <label>Acid (HCl) Molarity: <span><span id="acidMVal">1.00</span> M</span></label>
+        <input id="acidM" name="acidM" type="range" min="0.05" max="2" step="0.05" value="1" />
+      </div>
+      <div class="field">
+        <label>Base (NaOH) Molarity: <span><span id="baseMVal">1.00</span> M</span></label>
+        <input id="baseM" name="baseM" type="range" min="0.05" max="2" step="0.05" value="1" />
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Acid Volume: <span><span id="acidVVal">50</span> mL</span></label>
+          <input id="acidV" name="acidV" type="range" min="5" max="200" step="5" value="50" />
+        </div>
+        <div class="field">
+          <label>Base Volume: <span><span id="baseVVal">50</span> mL</span></label>
+          <input id="baseV" name="baseV" type="range" min="5" max="200" step="5" value="50" />
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" id="fillAcid">Fill Acid</button>
+        <button class="btn" id="fillBase">Fill Base</button>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="mixBtn">Mix</button>
+        <button class="btn" id="resetBtn">Reset</button>
+      </div>
+      <div class="field">
+        <label>Indicator (Universal): <span id="phLabel" name="phLabel">pH  —</span></label>
+        <div class="indicator-preview" id="indicatorPreview"></div>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:#60a5fa"></span>Acid liquid</span>
+        <span><span class="dot" style="background:#34d399"></span>Base liquid</span>
+        <span><span class="dot" style="background:#f472b6"></span>Mixture</span>
+      </div>
+      <p class="note">This simulator assumes <em>strong acid–strong base</em> neutralization. pH = 7 when n<sub>H⁺</sub> = n<sub>OH⁻</sub>. Otherwise, pH/pOH is computed from the excess species.</p>
+    </section>
+
+    <!-- Scene -->
+    <section class="scene" aria-label="lab scene">
+      <div class="toolbar">
+        <button class="btn" id="spawnIons">Show ions</button>
+        <button class="btn" id="clearIons">Clear ions</button>
+      </div>
+      <div class="readout">
+        <div class="chip" id="status">Status: Ready</div>
+        <div class="chip" id="mixInfo">—</div>
+      </div>
+
+      <div class="stage">
+        <div class="bench"></div>
+        <!-- Acid beaker -->
+        <div class="vessel" id="acid" aria-label="acid beaker">
+          <div class="glass"></div>
+          <div class="rim"></div>
+          <div class="base-ellipse"></div>
+          <div class="liquid" data-type="acid">
+            <div class="fill" style="background:linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,.05)), linear-gradient(180deg, #93c5fd, #3b82f6);"></div>
+            <div class="surface"></div>
+          </div>
+        </div>
+        <!-- Base beaker -->
+        <div class="vessel" id="base" aria-label="base beaker">
+          <div class="glass"></div>
+          <div class="rim"></div>
+          <div class="base-ellipse"></div>
+          <div class="liquid" data-type="base">
+            <div class="fill" style="background:linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,.05)), linear-gradient(180deg, #86efac, #10b981);"></div>
+            <div class="surface"></div>
+          </div>
+        </div>
+        <!-- Mixing beaker -->
+        <div class="vessel" id="mix" aria-label="mixing beaker">
+          <div class="glass"></div>
+          <div class="rim"></div>
+          <div class="base-ellipse"></div>
+          <div class="liquid" data-type="mix">
+            <div class="fill" id="mixFill"></div>
+            <div class="surface"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Helpers
+    const $ = (s, el=document)=>el.querySelector(s);
+    const $$ = (s, el=document)=>[...el.querySelectorAll(s)];
+    const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+    const log10 = x => Math.log(x)/Math.log(10);
+    const toL = ml => ml/1000;
+
+    // Map pH→color (approx universal indicator)
+    function pHToColor(ph){
+      ph = clamp(ph,0,14);
+      const t=ph/14; // 0..1
+      const H=(1-t)*240, S=.85, V=.95; // HSV
+      const C=V*S, X=C*(1-Math.abs((H/60)%2-1)), m=V-C; let r=0,g=0,b=0;
+      if(H<60){r=C;g=X;} else if(H<120){r=X;g=C;} else if(H<180){g=C;b=X;} else {g=X;b=C;}
+      const R=Math.round((r+m)*255), G=Math.round((g+m)*255), B=Math.round((b+m)*255);
+      return `rgb(${R},${G},${B})`;
+    }
+
+    // Elements
+    const acidM=$('#acidM'), baseM=$('#baseM'), acidV=$('#acidV'), baseV=$('#baseV');
+    const acidMVal=$('#acidMVal'), baseMVal=$('#baseMVal'), acidVVal=$('#acidVVal'), baseVVal=$('#baseVVal');
+    const fillAcidBtn=$('#fillAcid'), fillBaseBtn=$('#fillBase'), mixBtn=$('#mixBtn'), resetBtn=$('#resetBtn');
+    const indicatorPreview=$('#indicatorPreview'), phLabel=$('#phLabel'), status=$('#status'), mixInfo=$('#mixInfo');
+    const acidVessel=$('#acid'), baseVessel=$('#base'), mixVessel=$('#mix');
+    const acidLiquid=$('.liquid',acidVessel), baseLiquid=$('.liquid',baseVessel), mixLiquid=$('.liquid',mixVessel), mixFill=$('#mixFill');
+
+    const state={ acid:{M:1,Vml:50,filled:false}, base:{M:1,Vml:50,filled:false}, mix:{Vml:0,pH:null} };
+
+    function updateLabels(){
+      acidMVal.textContent=(+acidM.value).toFixed(2);
+      baseMVal.textContent=(+baseM.value).toFixed(2);
+      acidVVal.textContent=(+acidV.value).toFixed(0);
+      baseVVal.textContent=(+baseV.value).toFixed(0);
+      state.acid.M=+acidM.value; state.base.M=+baseM.value; state.acid.Vml=+acidV.value; state.base.Vml=+baseV.value;
+    }
+
+    function setLiquidHeight(el, ml){
+      const pct=clamp(ml/200,0,1);
+      el.style.height=(pct*80+5)+'%';
+    }
+
+    function setLiquidColor(ph){
+      const col=pHToColor(ph);
+      indicatorPreview.style.background=col;
+      phLabel.textContent=`pH ${ph.toFixed(2)}`;
+      mixFill.style.background=`linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,.05)), linear-gradient(180deg, ${col}, ${col})`;
+    }
+
+    function neutralizationPH(aM,aVml,bM,bVml){
+      const nH=aM*toL(aVml), nOH=bM*toL(bVml), Vt=toL(aVml+bVml);
+      if(Vt<=0) return null;
+      const eps=1e-12; if(Math.abs(nH-nOH)<eps) return 7;
+      if(nH>nOH){ const H=(nH-nOH)/Vt; return clamp(-log10(H),0,14); }
+      const OH=(nOH-nH)/Vt; const pOH=clamp(-log10(OH),0,14); return clamp(14-pOH,0,14);
+    }
+
+    function animatePour(fromVessel, fromLiquid, toLiquid, volMl){
+      return new Promise(res=>{
+        fromVessel.classList.add('pouring');
+        status.textContent='Status: Pouring…';
+        const startH=parseFloat(getComputedStyle(fromLiquid).height);
+        const endH=Math.max(startH-(volMl/200)*80,5);
+        const toStart=parseFloat(getComputedStyle(toLiquid).height);
+        const toEnd=Math.min(toStart+(volMl/200)*80,85);
+        const t0=performance.now(), dur=1600;
+        function step(t){
+          const k=clamp((t-t0)/dur,0,1);
+          fromLiquid.style.height=(startH+(endH-startH)*k)+'%';
+          toLiquid.style.height=(toStart+(toEnd-toStart)*k)+'%';
+          if(k<1) requestAnimationFrame(step); else { fromVessel.classList.remove('pouring'); status.textContent='Status: Ready'; res(); }
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    function spawnIons(container, count=40){
+      const box=container.getBoundingClientRect();
+      for(let i=0;i<count;i++){
+        const d=document.createElement('div'); d.className='ion';
+        d.style.left=(Math.random()*box.width*0.8+box.width*0.1)+'px';
+        d.style.top=(Math.random()*box.height*0.6+box.height*0.2)+'px';
+        container.appendChild(d);
+        const dx=(Math.random()*2-1)*60, dy=-(20+Math.random()*60), tt=2000+Math.random()*2500;
+        d.animate([{transform:'translate(0,0)',opacity:.9},{transform:`translate(${dx}px, ${dy}px)`,opacity:.1}],{duration:tt,iterations:Infinity,direction:'alternate',easing:'ease-in-out'});
+      }
+    }
+
+    function clearIons(){ $$('.ion').forEach(n=>n.remove()); }
+
+    // Events
+    [acidM,baseM,acidV,baseV].forEach(inp=>inp.addEventListener('input',updateLabels));
+
+    $('#fillAcid').addEventListener('click',()=>{ state.acid.filled=true; setLiquidHeight(acidLiquid,state.acid.Vml); status.textContent='Status: Acid ready'; });
+    $('#fillBase').addEventListener('click',()=>{ state.base.filled=true; setLiquidHeight(baseLiquid,state.base.Vml); status.textContent='Status: Base ready'; });
+
+    $('#mixBtn').addEventListener('click', async ()=>{
+      if(!state.acid.filled || !state.base.filled){ status.textContent='Status: Fill both beakers first!'; return; }
+      setLiquidHeight(mixLiquid,0);
+      await animatePour(acidVessel,acidLiquid,mixLiquid,state.acid.Vml);
+      await animatePour(baseVessel,baseLiquid,mixLiquid,state.base.Vml);
+      const ph=neutralizationPH(state.acid.M,state.acid.Vml,state.base.M,state.base.Vml);
+      state.mix.pH=ph; state.mix.Vml=state.acid.Vml+state.base.Vml; setLiquidColor(ph);
+      const nH=(state.acid.M*toL(state.acid.Vml)).toFixed(4); const nOH=(state.base.M*toL(state.base.Vml)).toFixed(4);
+      mixInfo.textContent=`n(H⁺)=${nH} mol, n(OH⁻)=${nOH} mol, Vt=${(state.mix.Vml/1000).toFixed(3)} L`;
+      status.textContent='Status: Mix complete ✅';
+    });
+
+    $('#resetBtn').addEventListener('click',()=>{
+      state.acid.filled=state.base.filled=false; state.mix.pH=null; state.mix.Vml=0;
+      setLiquidHeight(acidLiquid,0); setLiquidHeight(baseLiquid,0); setLiquidHeight(mixLiquid,0);
+      indicatorPreview.style.background='#334155'; phLabel.textContent='pH —'; mixInfo.textContent='—'; status.textContent='Status: Ready'; clearIons();
+    });
+
+    $('#spawnIons').addEventListener('click',()=>spawnIons($('.glass',mixVessel),50));
+    $('#clearIons').addEventListener('click',clearIons);
+
+    // Init
+    updateLabels(); setLiquidHeight(acidLiquid,0); setLiquidHeight(baseLiquid,0); setLiquidHeight(mixLiquid,0);
+  </script>
+
+  
+<script>
+    const currentUser = "<%= curr_user ? curr_user.username : '' %>";
+  function extractResultAcid() {
+     let acidMo = document.getElementById("acidM").value;
+     let baseMo = document.getElementById("baseM").value;
+     let acidVo = document.getElementById("acidV").value;
+     let baseVo = document.getElementById("baseV").value;
+
+    // Output pH read karna
+    let pHValue = state.mix.pH;;
+
+ // jahan pH show hota hai uska ID lagao
+ 
+    alert("data saved successfully");
+
+    // Agar backend me save karna ho
+    fetch("/save-acid-reaction", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        experiment_name: "Acid-base-reation",
+        done_by:  currentUser,
+        acidMolarity: acidMo,
+        baseMolarity: baseMo,
+        acidVolume:  acidVo,
+        baseVolume:  baseVo ,
+        pH: pHValue, 
+          status: "Mix complete"
+      })
+    })
+    .then(res => res.json())
+    .then(data => console.log("Saved in DB:", data))
+    .catch(err => console.error("Error:", err));
+  }
+  </script>
+</body>
+

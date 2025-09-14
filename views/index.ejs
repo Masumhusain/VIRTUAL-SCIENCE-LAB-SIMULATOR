@@ -1,0 +1,110 @@
+
+
+<% layout("layouts/boilerplate") %>
+<style>
+  body {
+    background-color: #13172a;
+  }
+</style>
+<body >
+ <section class="bg-light-blue py-5">
+  <div class="container">
+    <div class="row align-items-center">
+      
+      <!-- Left side (Text) -->
+      <div class="col-md-6 text-center text-md-start">
+        <h1 class="display-4 fw-bold text-white">Welcome to Virtual Science Lab</h1>
+        <p class="lead text-white">
+          Do physics & chemistry experiments virtually, anytime & anywhere!
+        </p>
+        <button onclick="document.getElementById('cards').scrollIntoView({behavior:'smooth'})"  class="btn btn-primary btn-lg mt-3 ">Get Started</button>
+      </div>
+      
+      <!-- Right side (Image) -->
+      <div class="col-md-6 text-center">
+        <img src="/images/labo.png" width="100%" alt="">
+      </div>
+
+    </div>
+
+
+  <!-- feature section  -->
+    <div class="card-container">
+   <!-- first  -->
+   <div class="card" style="width: 18rem;">
+<i class="fa-solid fa-atom"></i>
+ <br>
+    <p class="card-text">Physics Simulations</p>
+  
+
+</div>
+
+<!-- second  -->
+
+ <div class="card" style="width: 18rem;">
+ <i class="fa-solid fa-flask-vial"></i>
+ <br>
+  
+    <p class="card-text">Chemistry Experiments</p>
+  
+ 
+</div>
+
+
+<!-- third  -->
+  <div class="card" style="width: 18rem;">
+  <i class="fa-solid fa-arrow-up-right-dots"></i>
+   <br>
+    <p class="card-text">Step by Step Guidence</p>
+
+</div>
+
+ <!-- explore experiment section   -->
+<!-- three icon images div end  -->
+ </div> <!--this div is secont nav container div  -->
+ <!-- first  -->
+ <div id="cards" class="card-container w-100">
+ <div class="card mt-4 card-img" style="width: 18rem;">
+  <img src="/images/ohmlaw.png" class="card-img-top" alt="ohm law image">
+  <div class="card-body">
+    <h5 class="card-title">Ohm's Law</h5>
+    <br>
+    <a href="/ohms" class="btn btn-primary">Start</a>
+  </div>
+</div>
+
+<!-- second  -->
+
+<div class="card mt-4 card-img" style="width: 18rem;">
+  <img src="/images/acid.webp" class="card-img-top" alt="acid base reation showing">
+  <div class="card-body">
+    <h5 class="card-title">Acid-Base Reaction</h5>
+    <br>
+    <a href="/acid-base-reaction" class="btn btn-primary">Start</a>
+  </div>
+</div>
+
+<!-- third  -->
+ <div class="card mt-4 card-img" style="width: 18rem;">
+  <img src="/images/newtons.webp" class="card-img-top" alt="image of ball concept of newtons law">
+  <div class="card-body">
+    <h5 class="card-title">Newton's Motion</h5>
+    <br>
+    <a href="/newtons-motion" class="btn btn-primary">Start</a>
+  </div>
+</div>
+</div>
+
+<!-- save experiment section   -->
+<div class="experiment mt-4">
+  <h3 class="text-white">Explore Experiments</h3>
+  <div class="save-experiment">
+    <p class="bold text-white">Save your experiments</p>
+    <button class="btn btn-success w-10">Start</button>
+    </div>
+</div>
+  </div> <!-- lat div -->
+</section>
+
+
+</body>

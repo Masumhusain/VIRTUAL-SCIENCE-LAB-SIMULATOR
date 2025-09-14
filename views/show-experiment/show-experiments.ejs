@@ -1,0 +1,95 @@
+<% layout("layouts/boilerplate") %>
+
+<style>
+  .exp-links-wrapper {
+    margin: 0;
+    padding: 60px 20px;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg,#0a0f1f,#1b1f3b);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .exp-links-row {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap; 
+    justify-content: center;
+  }
+
+  .exp-card {
+    width: 320px;
+    border-radius: 18px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: all 0.4s ease;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .exp-card:hover {
+    transform: translateY(-12px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  }
+
+  .exp-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  .exp-card-content {
+    padding: 20px;
+  }
+
+  .exp-card-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .exp-card-desc {
+    font-size: 1rem;
+    color: #cbd5e1;
+  }
+</style>
+
+<body>
+  <div class="exp-links-wrapper">
+    <div class="exp-links-row">
+
+      <!-- Ohm's Law Saved -->
+      <a href="/experiments" class="exp-card">
+        <img src="/images/ohmsc.jpeg" alt="Ohm's Law">
+        <div class="exp-card-content">
+          <h3 class="exp-card-title">⚡ Ohm’s Law Saved Data</h3>
+          <p class="exp-card-desc">View all your saved Ohm’s Law experiment results.</p>
+        </div>
+      </a>
+
+      <!-- Acid Base Reaction Saved -->
+      <a href="/experiments-acid" class="exp-card">
+        <img src="/images/acid.webp" alt="Acid Base">
+        <div class="exp-card-content">
+          <h3 class="exp-card-title">🧪 Acid–Base Saved Data</h3>
+          <p class="exp-card-desc">Check saved results of Acid–Base neutralization experiments.</p>
+        </div>
+      </a>
+
+
+      <!--  newton motion -->
+        <!-- Acid Base Reaction Saved -->
+      <a href="/experiments-motion" class="exp-card">
+        <img src="/images/newtons.webp" alt="motion Base">
+        <div class="exp-card-content">
+          <h3 class="exp-card-title">Newtons-motion Saved Data</h3>
+          <p class="exp-card-desc">Check saved results of Acid–Base neutralization experiments.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</body>

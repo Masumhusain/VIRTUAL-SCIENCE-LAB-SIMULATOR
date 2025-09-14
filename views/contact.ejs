@@ -1,0 +1,105 @@
+<% layout("layouts/boilerplate") %>
+<style>
+  body {
+    background-color: #13172a;
+    color: #fff;
+  }
+
+  .contact-section {
+    padding: 60px 20px;
+  }
+
+  .contact-card {
+    background: #1f2235;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+
+  .form-control {
+    border-radius: 8px;
+  }
+
+  .map-container {
+    margin-top: 30px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+
+  /* ✅ Success & Error Messages */
+  .status-message {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .status-success {
+    color: #4CAF50; /* Green */
+  }
+  .status-error {
+    color: #FF5252; /* Red */
+  }
+</style>
+
+<body>
+  <section class="contact-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        
+        <!-- Left Side (Contact Info) -->
+        <div class="col-md-5 mb-4">
+          <div class="contact-card">
+            <h2>📞 Contact Us</h2>
+            <p class="mt-3">We’d love to hear from you! Whether you have questions about experiments, features, or anything else – our team is ready to answer all your queries.</p>
+            
+            <ul class="list-unstyled mt-4">
+              <li><i class="fa-solid fa-envelope"></i> support@virtuallab.com</li>
+              <li class="mt-2"><i class="fa-solid fa-phone"></i> +91 7070****91</li>
+              <li class="mt-2"><i class="fa-solid fa-location-dot"></i> Siwan Bihar, India</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Right Side (Contact Form) -->
+        <div class="col-md-7 mb-4">
+          <div class="contact-card">
+            <h2>✍️ Send a Message</h2>
+            <form class="mt-3" id="contactForm" action="https://formspree.io/f/xovnqjko" method="POST"> <!-- ✅ Correct ID -->
+              <div class="mb-3">
+                <input type="text" id="from_name" name="from_name" class="form-control" placeholder="Your Name" required>
+              </div>
+              <div class="mb-3">
+                <input type="email" id="from_email" name="from_email" class="form-control" placeholder="Your Email" required>
+              </div>
+              <div class="mb-3">
+                <textarea id="message" name="message" class="form-control" rows="5" placeholder="Your Message"></textarea>
+              </div>
+
+              <!-- ✅ Status message yahan aayega -->
+              <div id="formStatus" class="status-message"></div>
+
+              <button type="submit" id="submitBtn" class="btn btn-primary w-100">Send Message</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Map Section -->
+      <div class="map-container">
+        <iframe 
+          src="https://www.google.com/maps?q=Siwan,+Bihar,+India&z=12&output=embed"
+          width="100%"
+          height="300"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+
+    </div>
+  </section>
+
+
+</body>
